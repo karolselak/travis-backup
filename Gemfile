@@ -3,14 +3,12 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.2'
+ruby '2.7.0'
 
 gem 'activerecord'
-gem 'google-cloud-storage', '~> 1.8', require: false
 gem 'pg'
 gem 'pry'
 gem 'rails', '~> 6.1.3.1'
-gem 'redis'
 
 gem 'bootsnap', require: false
 

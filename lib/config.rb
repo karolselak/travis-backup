@@ -2,22 +2,23 @@
 
 # Config for travis-backup
 class Config
-  attr_reader :limit, :delay, :housekeeping_period, :database_url, :logs_url, :gce_project,
-              :gce_credentials, :gce_bucket, :redis_url
+  attr_reader :if_backup, :limit, :delay, :files_location, :database_url
 
-  def initialize # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+  def initialize(args={}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
     config = YAML.load(File.open('config/settings.yml'))
     connection_details = YAML.load(File.open('config/database.yml'))
 
-    @limit = ENV['BACKUP_LIMIT'] || config['backup']['limit']
-    @delay = ENV['BACKUP_DELAY'] || config['backup']['delay']
-    @logs_url = ENV['LOGS_URL'] || config['backup']['logs_url']
-    @housekeeping_period = ENV['BACKUP_HOUSEKEEPING_PERIOD'] || config['backup']['housekeeping_period']
-    @database_url = ENV['DATABASE_URL'] || connection_details['development']
-    @gce_project = ENV['GCE_PROJECT'] || config['gce']['project']
-    credentials = ENV['GCE_CREDENTIALS'] || (File.exist?(config['gce']['credentials']) ? File.read(config['gce']['credentials']) : nil)
-    @gce_credentials = credentials ? JSON.parse(credentials) : nil
-    @gce_bucket = ENV['GCE_BUCKET'] || config['gce']['bucket']
-    @redis = ENV['REDIS_URL'] || config['redis']['url']
+    if !args[:if_backup].nil?
+      @if_backup = args[:if_backup]
+    elsif !ENV['IF_BACKUP'].nil?
+      @if_backup = ENV['IF_BACKUP']
+    else
+      @if_backup = config['backup']['if_backup']
+    end
+
+    @limit = args[:limit] || ENV['BACKUP_LIMIT'] || config['backup']['limit']
+    @delay = args[:delay] || ENV['BACKUP_DELAY'] || config['backup']['delay']
+    @files_location = args[:files_location] || ENV['BACKUP_FILES_LOCATION'] || config['backup']['files_location']
+    @database_url = args[:database_url] || ENV['DATABASE_URL'] || connection_details['development']
   end
 end
